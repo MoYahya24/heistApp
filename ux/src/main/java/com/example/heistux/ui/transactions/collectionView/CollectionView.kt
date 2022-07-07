@@ -17,13 +17,30 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.example.heistux.ui.navigation.NavDrawer
+import io.heist.store.model.core.parties.Party
 import io.heist.store.model.core.transactions.Transaction
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
-fun TransactionsCollectionView(transactions: List<Transaction>) {
+fun TransactionsCollectionView(transactionlist: List<Transaction>?=listOf<Transaction>(Transaction(id="-4")), party: Party, navController: NavController) {
 
-    NavDrawer() {
+    var transactions = mutableListOf<Transaction>(Transaction(id="-4"))
+
+    if(transactionlist!!.equals(transactions)) {
+        party.accounts?.forEach { it->
+            transactions = mutableListOf<Transaction>()
+            transactions.addAll(it.transactions!!)
+        }
+    }
+
+    else {
+        transactions = mutableListOf<Transaction>()
+        transactions.addAll(transactionlist)
+    }
+
+    //transactions.sortedBy { it.booked }
+
+    NavDrawer(navController = navController, party = party) {
         Column(
             horizontalAlignment = Alignment.Start,
             modifier = Modifier

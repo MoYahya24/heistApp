@@ -45,7 +45,7 @@ fun Greeting(name: String) {
             .background(color = Color(0xFF000000))) {
         //NavDrawer()
         Text(text = "${x.value}", color = Color(0xFFFFFFFF))
-        ComboBox(listOf<String>("CommonWealth","WestPac","ANZ","NAB"), "Choose A Bank")
+        //ComboBox(listOf<String>("CommonWealth","WestPac","ANZ","NAB"), "Choose A Bank")
         HeistButton(action = { x.value += 1 }, size = ButtonSize.MEDIUM , name, modifier = Modifier.padding(30.dp))
        // HeistTextField(fieldLabel = "Email", icon = Icons.Outlined.Email, fieldType = KeyboardType.Email)
     }
@@ -55,7 +55,7 @@ fun Greeting(name: String) {
 @Composable
 fun DefaultPreview() {
     HeistcxdrdTheme {
-        eywa()
+        //eywa()
         //Greeting(name = "SUBMIT")
     }
 }

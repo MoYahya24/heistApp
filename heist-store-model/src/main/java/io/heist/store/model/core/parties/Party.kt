@@ -31,7 +31,7 @@ data class Party (
 
     val addresses: List<Address>? = null,
 
-    val accounts: List<Account>? = listOf<Account>(),
+    val accounts: MutableList<Account>? = mutableListOf(),
 
     val contacts: List<Contact>? = null
 

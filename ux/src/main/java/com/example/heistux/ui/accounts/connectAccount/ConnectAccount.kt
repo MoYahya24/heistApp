@@ -15,13 +15,12 @@ import androidx.navigation.NavController
 import com.example.heist_cx_drd.ui.components.ButtonSize
 import com.example.heist_cx_drd.ui.components.ComboBox
 import com.example.heist_cx_drd.ui.components.HeistButton
-import com.ramcosta.composedestinations.annotation.Destination
-import com.ramcosta.composedestinations.navigation.DestinationsNavigator
+import com.example.heistux.ui.navigation.Screen
+import com.google.gson.Gson
 import io.heist.store.model.core.parties.Party
 
-@Destination
 @Composable
-fun ConnectAccount(navigator: DestinationsNavigator, party : Party) {
+fun ConnectAccount( party : Party, navController: NavController, ) {
 
     Column(modifier = Modifier
         .fillMaxSize()
@@ -41,14 +40,14 @@ fun ConnectAccount(navigator: DestinationsNavigator, party : Party) {
             Column(Modifier.fillMaxSize(), verticalArrangement = Arrangement.SpaceBetween) {
                 Column(Modifier.wrapContentSize()) {
                     Text(
-                        text = "Bank name",
+                        text = party.name!!,
                         color = Color(0xFFFFFFFF),
                         fontSize = MaterialTheme.typography.h6.fontSize,
                         fontWeight = FontWeight.ExtraBold,
                         modifier = Modifier.padding(start = 20.dp, top = 20.dp)
                     )
                     val banks= listOf<String>("CommonWealth","WestPac","ANZ","NAB")
-                    ComboBox(list = banks, text = "-select bank-", boxmodifier = Modifier.padding(horizontal = 20.dp))
+                    //ComboBox(list = banks, text = "-select bank-", boxmodifier = Modifier.padding(horizontal = 20.dp))
                 }
 
                 Row(horizontalArrangement = Arrangement.End, modifier = Modifier
@@ -56,7 +55,9 @@ fun ConnectAccount(navigator: DestinationsNavigator, party : Party) {
                     .fillMaxWidth()
                     //.padding(top = 40.dp, bottom = 100.dp, start = 15.dp, end = 15.dp)
                 ) {
-                    HeistButton(action = {}, size = ButtonSize.MEDIUM, text ="CANCEL" , modifier = Modifier
+                    HeistButton(action = {
+                                         navController.popBackStack()
+                    }, size = ButtonSize.MEDIUM, text ="CANCEL" , modifier = Modifier
                         .padding(start=10.dp, bottom = 30.dp, top = 30.dp, end = 20.dp), hasBorder = false)
 
 

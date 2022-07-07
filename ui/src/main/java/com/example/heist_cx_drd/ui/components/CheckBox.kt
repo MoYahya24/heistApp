@@ -21,32 +21,35 @@ import com.example.heist_cx_drd.ui.theme.Blackish
 import com.example.heist_cx_drd.ui.theme.White
 import com.example.heist_cx_drd.ui.theme.HeistcxdrdTheme
 
+class CheckedOption(text: String){
+    var text: String by mutableStateOf(text)
+}
+
 @Composable
 fun GroupedCheckbox(
     list: List<String>,
     size:Size,
-    modifier: Modifier=Modifier
+    modifier: Modifier=Modifier,
+    checkedOption: CheckedOption
 ){
     var states = remember { mutableStateListOf(false)}
     for(i in 1 until list.size) {
         states.add( false)
     }
 
-    var checkedOption : String?
     Column(modifier = modifier) {
         list.forEachIndexed{index, item->
             Row (verticalAlignment = Alignment.CenterVertically, modifier = Modifier.padding(start=20.dp, top=20.dp, bottom = size.padding.dp)){
                 Checkbox(checked = states[index],
                     onCheckedChange = { states[index]=!states[index]
                         if(states[index]==true) {
-                            checkedOption=item
+                            checkedOption.text=item
                             for (i in states.indices) {
                                 if (i != index) {
                                     states[i] = false
                                 }
                             }
                         }
-                        else checkedOption=null
                     },
                     modifier = Modifier.scale(size.scale),
                     colors = CheckboxDefaults.colors(
@@ -55,7 +58,7 @@ fun GroupedCheckbox(
                         checkedColor = Blackish
                     )
                 )
-                Text(color= White,text = item, modifier = Modifier.padding(start = size.padding.dp), fontWeight = FontWeight.ExtraBold, fontSize = size.size.sp/*MaterialTheme.typography.h6.fontSize,*/)
+                Text(color= White,text = item, modifier = Modifier.padding(start = size.padding.dp), fontWeight = FontWeight.ExtraBold, fontSize = size.size.sp)
             }
 
 
@@ -70,23 +73,3 @@ enum class Size(val size: Float, val scale: Float, val padding: Int) {
     HUGE(28f, 3F, 23)
 }
 
-
-@Composable
-fun eywa() {
-    val list= listOf<String>("Checkings","Savings", "trami", "swaa")
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(color = Color(0xFF000000))) {
-        GroupedCheckbox(list = list,  Size.HUGE)
-
-    }
-}
-
-@Preview(showBackground = true)
-@Composable
-fun DefaultPreview() {
-    HeistcxdrdTheme {
-        eywa()
-    }
-}

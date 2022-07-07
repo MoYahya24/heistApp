@@ -1,34 +1,49 @@
 package com.example.heistux.ui.accounts.openAccount
 
 
+import android.accounts.Account
+import android.os.Build
+import android.widget.Toast
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.*
 import androidx.compose.runtime.*
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.example.heist_cx_drd.ui.components.*
 import com.example.heist_cx_drd.ui.theme.White
-import com.ramcosta.composedestinations.annotation.Destination
-import com.ramcosta.composedestinations.navigation.DestinationsNavigator
+import com.example.heistux.ui.navigation.Screen
+import com.google.gson.Gson
 import io.heist.store.model.core.parties.Party
+import io.heist.store.model.core.accounts.*
+import io.heist.store.model.core.amounts.Amount
+import io.heist.store.model.core.balances.Balance
+import io.heist.store.model.core.institutes.Institute
+import io.heist.store.model.core.transactions.Transaction
+import java.math.BigDecimal
+import java.time.OffsetDateTime
 
-@Destination
 @Composable
-fun OpenAcc1(party: Party, navigator: DestinationsNavigator){
+fun OpenAcc1(navController: NavController, party: Party){
+
+    var comboText = ComboBoxText()
 
     Column(modifier = Modifier
         .fillMaxSize()
         .background(color = Color(0xFF000000))
     ) {
+        val context = LocalContext.current
         Text(
             text = "Where would you like to open an account?",
             color = Color(0xFFFFFFFF),
@@ -50,7 +65,7 @@ fun OpenAcc1(party: Party, navigator: DestinationsNavigator){
                         modifier = Modifier.padding(start = 20.dp, top = 20.dp)
                     )
                     val banks= listOf<String>("CommonWealth","WestPac","ANZ","NAB")
-                    ComboBox(list = banks, text = "-select bank-", boxmodifier = Modifier.padding(horizontal = 20.dp))
+                    ComboBox(list = banks, boxmodifier = Modifier.padding(horizontal = 20.dp), comboBoxText = comboText)
                 }
 
                 Row(horizontalArrangement = Arrangement.End, modifier = Modifier
@@ -58,11 +73,21 @@ fun OpenAcc1(party: Party, navigator: DestinationsNavigator){
                     .fillMaxWidth()
                     //.padding(top = 40.dp, bottom = 100.dp, start = 15.dp, end = 15.dp)
                 ) {
-                    HeistButton(action = {  }, size = ButtonSize.MEDIUM, text ="CANCEL" , modifier = Modifier
+                    HeistButton(action = { navController.popBackStack() }, size = ButtonSize.MEDIUM, text ="CANCEL" , modifier = Modifier
                         .padding(start=10.dp, bottom = 30.dp, top = 30.dp, end = 20.dp), hasBorder = false)
 
 
-                    HeistButton(action = { }, size = ButtonSize.MEDIUM, text ="GO TO PERSONAL DETAILS" , modifier = Modifier
+                    HeistButton(action = {
+                        if(comboText.text=="") {
+                            Toast.makeText(context, "Please Choose A Valid Bank", Toast.LENGTH_SHORT).show()
+                        }
+                        else {
+                            val partyJson = Gson().toJson(party) as String
+                            val bank= comboText.text
+                            navController.navigate(Screen.OpenAccount2.route+"/${partyJson}"+"/${bank}")
+                        }
+
+                    }, size = ButtonSize.MEDIUM, text ="GO TO PERSONAL DETAILS" , modifier = Modifier
                         .padding(bottom = 30.dp, top = 30.dp, end = 20.dp))
 
                 }
@@ -73,9 +98,9 @@ fun OpenAcc1(party: Party, navigator: DestinationsNavigator){
     }
 }
 
-@Destination
+
 @Composable
-fun OpenAcc2(party: Party, navigator: DestinationsNavigator) {
+fun OpenAcc2(navController: NavController, party: Party, bank: String) {
 
     Column(modifier = Modifier
         .fillMaxSize()
@@ -112,7 +137,7 @@ fun OpenAcc2(party: Party, navigator: DestinationsNavigator) {
                         fieldType = KeyboardType.Text,
                         value = address,
                         onvaluechange = {newAddress : String ->
-                            name = newAddress
+                            address = newAddress
                         },
                         modifier = Modifier.padding(start=20.dp, top=20.dp))
 
@@ -122,7 +147,7 @@ fun OpenAcc2(party: Party, navigator: DestinationsNavigator) {
                         fieldType = KeyboardType.Phone,
                         value = phone,
                         onvaluechange = {newPhone : String ->
-                            name = newPhone
+                            phone = newPhone
                         },
                         modifier = Modifier.padding(start=20.dp, top=20.dp))
 
@@ -134,10 +159,15 @@ fun OpenAcc2(party: Party, navigator: DestinationsNavigator) {
                     //.padding(top = 40.dp, bottom = 100.dp, start = 15.dp, end = 15.dp)
                 )
                 {
-                    HeistButton(action = {  }, size = ButtonSize.MEDIUM, text ="CANCEL" , modifier = Modifier
+                    HeistButton(action = { navController.popBackStack() }, size = ButtonSize.MEDIUM, text ="CANCEL" , modifier = Modifier
                         .padding(start=10.dp, bottom = 30.dp, top = 30.dp, end = 20.dp), hasBorder = false)
 
-                    HeistButton(action = {  }, size = ButtonSize.MEDIUM, text ="GO TO ACCOUNT TYPE" , modifier = Modifier
+                    HeistButton(action = {
+
+                        val partyJson = Gson().toJson(party) as String
+                        navController.navigate(Screen.OpenAccount3.route+"/${partyJson}"+"/${bank}")
+
+                    }, size = ButtonSize.MEDIUM, text ="GO TO ACCOUNT TYPE" , modifier = Modifier
                         .padding(bottom = 30.dp, top = 30.dp, end = 20.dp))
                 }
 
@@ -147,13 +177,16 @@ fun OpenAcc2(party: Party, navigator: DestinationsNavigator) {
     }
 }
 
-@Destination
 @Composable
-fun OpenAcc3(party: Party, navigator: DestinationsNavigator) {
+fun OpenAcc3(navController: NavController, party: Party, bank: String) {
+
+    var checkedOption = CheckedOption("")
+
     Column(modifier = Modifier
         .fillMaxSize()
         .background(color = Color(0xFF000000))
     ) {
+        val context = LocalContext.current
         Text(
             text = "Choose the kind of account you would like to open",
             color = Color(0xFFFFFFFF),
@@ -167,8 +200,8 @@ fun OpenAcc3(party: Party, navigator: DestinationsNavigator) {
         ) {
             Column(Modifier.fillMaxSize(), verticalArrangement = Arrangement.SpaceBetween) {
                 Column(Modifier.wrapContentSize()) {
-                    val list= listOf<String>("Checkings","Savings")
-                    GroupedCheckbox(list = list, Size.LARGE, modifier = Modifier.padding(40.dp))
+                    val list= listOf<String>("Business","Personal")
+                    GroupedCheckbox(list = list, Size.LARGE, modifier = Modifier.padding(40.dp), checkedOption = checkedOption)
 
                 }
 
@@ -180,7 +213,18 @@ fun OpenAcc3(party: Party, navigator: DestinationsNavigator) {
                     HeistButton(action = { }, size = ButtonSize.MEDIUM, text ="CANCEL" , modifier = Modifier
                         .padding(start=10.dp, bottom = 30.dp, top = 30.dp, end = 20.dp), hasBorder = false)
 
-                    HeistButton(action = {  }, size = ButtonSize.MEDIUM, text ="CONFIRM" , modifier = Modifier
+                    HeistButton(action = {
+
+                        if(checkedOption.text=="") {
+                            Toast.makeText(context, "Please Choose Your New Account Type", Toast.LENGTH_SHORT).show()
+                        }
+                        else {
+                            val partyJson = Gson().toJson(party) as String
+                            val type = checkedOption.text
+                            navController.navigate(Screen.OpenAccount4.route+"/${partyJson}"+"/${bank}"+"/${type}")
+                        }
+
+                    }, size = ButtonSize.MEDIUM, text ="CONFIRM" , modifier = Modifier
                         .padding(bottom = 30.dp, top = 30.dp, end = 20.dp))
                 }
 
@@ -190,9 +234,16 @@ fun OpenAcc3(party: Party, navigator: DestinationsNavigator) {
     }
 }
 
-@Destination
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
-fun OpenAcc4(party: Party, navigator: DestinationsNavigator) {
+fun OpenAcc4(navController: NavController, party: Party, bank: String, type: String) {
+
+    val x : OffsetDateTime = OffsetDateTime.now()
+    val y = OffsetDateTime.now()
+    val z = OffsetDateTime.now()
+    val acc = Account( type= type as String, institute = Institute(ref = bank as String), balance = Balance(amount = Amount(value = BigDecimal.valueOf(0))), transactions = listOf<Transaction>(Transaction(booked = x, info = "L7aj", amount = Amount(value = BigDecimal.valueOf(50.00))),Transaction(booked = x, info = "L7aj", amount = Amount(value = BigDecimal.valueOf(50.00))),Transaction(booked = x, info = "L7aj", amount = Amount(value = BigDecimal.valueOf(50.00))),Transaction(booked = x, info = "L7aj", amount = Amount(value = BigDecimal.valueOf(50.00))),Transaction(booked = x, info = "L7aj", amount = Amount(value = BigDecimal.valueOf(50.00))),Transaction(booked = x, info = "L7aj", amount = Amount(value = BigDecimal.valueOf(50.00))),Transaction(booked = x, info = "L7aj", amount = Amount(value = BigDecimal.valueOf(50.00))),Transaction(booked = x, info = "L7aj", amount = Amount(value = BigDecimal.valueOf(50.00))),Transaction(booked = x, info = "L7aj", amount = Amount(value = BigDecimal.valueOf(50.00))),Transaction(booked = x, info = "L7aj", amount = Amount(value = BigDecimal.valueOf(50.00))),Transaction(booked = x, info = "L7aj", amount = Amount(value = BigDecimal.valueOf(50.00))),Transaction(booked = x, info = "L7aj", amount = Amount(value = BigDecimal.valueOf(50.00))),Transaction(booked = x, info = "L7aj", amount = Amount(value = BigDecimal.valueOf(50.00))),Transaction(booked = x, info = "L7aj", amount = Amount(value = BigDecimal.valueOf(50.00))), Transaction(booked = y, info = "Proxi", amount = Amount(value = BigDecimal.valueOf(21.58))), Transaction(booked = z, info = "GH", amount = Amount(value = BigDecimal.valueOf(40.00)))))
+    party.accounts?.add(acc)
+
     Column(modifier = Modifier
         .fillMaxSize()
         .background(color = Color(0xFF000000))
@@ -217,19 +268,26 @@ fun OpenAcc4(party: Party, navigator: DestinationsNavigator) {
                         fontWeight = FontWeight.ExtraBold,
                         modifier = Modifier
                     )
-                    Icon(imageVector = Icons.Outlined.CheckCircle,  contentDescription = "", tint = White, modifier = Modifier.padding(top= 60.dp, bottom = 200.dp).scale(5F))
+                    Icon(imageVector = Icons.Outlined.CheckCircle,  contentDescription = "", tint = White, modifier = Modifier
+                        .padding(top = 60.dp, bottom = 200.dp)
+                        .scale(5F))
                 }
 
                 Row(horizontalArrangement = Arrangement.End, modifier = Modifier
                     .background(Color(0xFF000000))
-                    .fillMaxWidth().wrapContentHeight()
+                    .fillMaxWidth()
+                    .wrapContentHeight()
                     //.padding(top = 40.dp, bottom = 100.dp, start = 15.dp, end = 15.dp)
                 ) {
 
-                    HeistButton(action = {  }, size = ButtonSize.MEDIUM, text ="GO TO DASHBOARD" , modifier = Modifier
+                    HeistButton(action = {
+
+                        val partyJson = Gson().toJson(party) as String
+                        navController.navigate(Screen.AccCollectionView.route+"/${partyJson}")
+
+                    }, size = ButtonSize.MEDIUM, text ="GO TO DASHBOARD" , modifier = Modifier
                         .padding(bottom = 30.dp, top = 30.dp, end = 20.dp))
                 }
-
 
             }
         }

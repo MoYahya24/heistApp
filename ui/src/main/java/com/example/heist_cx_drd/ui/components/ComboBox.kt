@@ -24,10 +24,11 @@ import com.example.heist_cx_drd.ui.theme.Blackish
 import com.example.heist_cx_drd.ui.theme.White
 
 @Composable
-fun ComboBox(list : List<String>, text : String, boxmodifier : Modifier = Modifier) {
+fun ComboBox(comboBoxText: ComboBoxText, list : List<String>, boxmodifier : Modifier = Modifier) {
 
+    var selected = false
     var rowSize by remember { mutableStateOf(Size.Zero) }
-    var comboText by remember { mutableStateOf(text) }
+    var text by remember { mutableStateOf("- select a bank -") }
     var expanded by remember { mutableStateOf(false) }
     Row( modifier = boxmodifier
         .fillMaxWidth()
@@ -41,15 +42,17 @@ fun ComboBox(list : List<String>, text : String, boxmodifier : Modifier = Modifi
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically
     ){
-        Text(text = comboText, modifier = Modifier.padding(8.dp), fontSize = 20.sp, color = White)
+        Text(text = text, modifier = Modifier.padding(8.dp), fontSize = 20.sp, color = White)
         DropdownMenu(expanded = expanded, onDismissRequest = { expanded=false },
             Modifier
                 .width(with(LocalDensity.current) { rowSize.width.toDp() })
                 .background(Blackish/*Color(0xFF222222)*/)) {
-            list.forEach{
-                    item -> DropdownMenuItem(modifier = Modifier.padding(10.dp).fillMaxWidth(), onClick = {
+            list.forEach{ item -> DropdownMenuItem(modifier = Modifier.padding(10.dp).fillMaxWidth(), onClick = {
                 expanded=false
-                comboText=item.toString()
+                selected=true
+                text=item.toString()
+                comboBoxText.text=item.toString()
+
             }) {
                 Text(text = item.toString(), color = White)
             }
@@ -59,5 +62,8 @@ fun ComboBox(list : List<String>, text : String, boxmodifier : Modifier = Modifi
             Blackish), tint = White)
     }
 
+}
 
+class ComboBoxText(){
+    var text: String by mutableStateOf("")
 }

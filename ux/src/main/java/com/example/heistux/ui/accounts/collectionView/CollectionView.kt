@@ -1,15 +1,13 @@
 package com.example.heistux.ui.accounts.collectionView
 
 
-import androidx.compose.foundation.background
-import androidx.compose.foundation.border
+import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.text.font.FontWeight
@@ -19,26 +17,30 @@ import androidx.navigation.NavController
 import com.example.heist_cx_drd.ui.components.ButtonSize
 import com.example.heist_cx_drd.ui.components.HeistButton
 import com.example.heistux.ui.navigation.NavDrawer
+import com.example.heistux.ui.navigation.Screen
+import com.example.heistux.ui.theme.Black
+import com.example.heistux.ui.theme.White
+import com.google.gson.Gson
 import io.heist.store.model.core.parties.Party
 import java.math.BigDecimal
 
 @Composable
-fun AccountsCollectionView(party : Party, ) {
+fun AccountsCollectionView(navController: NavController, party : Party ) {
 
     if(party.accounts.isNullOrEmpty()) {
-        NoAccount(party = party, )
+        NoAccount(party = party, navController)
     }
-    
+
     else {
-        HasAccount(party = party, )
+        HasAccount(party = party, navController )
     }
     
 }
 
 @Composable
-fun NoAccount(party : Party,) {
+fun NoAccount(party : Party, navController: NavController) {
 
-    NavDrawer() {
+    NavDrawer(party = party, navController = navController) {
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
             modifier = Modifier
@@ -76,10 +78,18 @@ fun NoAccount(party : Party,) {
                         modifier = Modifier.padding( start= 25.dp, top = 30.dp)
                     )
 
-                    HeistButton(action = { }, size = ButtonSize.MEDIUM, text = "CONNECT AN ACCOUNT", modifier = Modifier
+                    HeistButton(action = {
+                        val partyJson = Gson().toJson(party) as String
+                        navController.navigate(Screen.ConnectAccount.route+"/${partyJson}")
+
+                    }, size = ButtonSize.MEDIUM, text = "CONNECT AN ACCOUNT", modifier = Modifier
                         .padding(start = 25.dp, top = 30.dp))
 
-                    HeistButton(action = { }, size = ButtonSize.MEDIUM, text = "OPEN AN ACCOUNT", modifier = Modifier
+                    HeistButton(action = {
+                        val partyJson = Gson().toJson(party) as String
+                        navController.navigate(Screen.OpenAccount1.route+"/${partyJson}")
+
+                    }, size = ButtonSize.MEDIUM, text = "OPEN AN ACCOUNT", modifier = Modifier
                         .padding(start = 25.dp, top = 30.dp)
                         .border(width = 2.dp, color = Color(0xFFFFFFFF), shape = RectangleShape))
 
@@ -93,15 +103,15 @@ fun NoAccount(party : Party,) {
 
 }
 @Composable
-fun HasAccount(party : Party,) {
-
+fun HasAccount(party : Party, navController: NavController) {
+    val partyJson = Gson().toJson(party) as String
     var totalBalance : BigDecimal = BigDecimal.valueOf(0)
 
    for(account in party.accounts!!) {
        totalBalance += account.balance!!.amount!!.value!!
   }
 
-    NavDrawer() {
+    NavDrawer(navController = navController, party = party) {
         Column(
             horizontalAlignment = Alignment.Start,
             modifier = Modifier
@@ -114,14 +124,44 @@ fun HasAccount(party : Party,) {
                 color = Color(0xFFFFFFFF),
                 fontSize = MaterialTheme.typography.h3.fontSize,
                 fontWeight = FontWeight.ExtraBold,
-                modifier = Modifier.padding(top = 120.dp, start= 20.dp)
+                modifier = Modifier.padding(top = 10.dp, start= 20.dp, bottom=5.dp)
             )
 
+            Divider(color = White, thickness = 1.dp, modifier = Modifier.width(150.dp).padding(start= 20.dp))
+
+            Column(horizontalAlignment = Alignment.Start, modifier = Modifier
+                .background(Color(0xFF000000))
+                .fillMaxWidth()
+                .wrapContentHeight()
+                 .padding(top = 30.dp)
+            ) {
+
+                HeistButton(action = {
+
+                    val partyJson = Gson().toJson(party) as String
+                    navController.navigate(Screen.OpenAccount1.route+"/${partyJson}")
+
+                }, size = ButtonSize.MEDIUM, text ="OPEN AN ACCOUNT" , modifier = Modifier
+                    .padding(start=20.dp)
+                )
+
+                HeistButton(action = {
+
+                    val partyJson = Gson().toJson(party) as String
+                    navController.navigate(Screen.ConnectAccount.route+"/${partyJson}")
+
+                }, size = ButtonSize.MEDIUM, text ="CONNECT ACCOUNT" , modifier = Modifier
+                    .padding(top = 20.dp, bottom = 30.dp, start = 20.dp)
+                        )
+
+            }
+
+
             Card( modifier = Modifier
-                .fillMaxSize()
+                .fillMaxWidth()
                 .padding(top = 15.dp), backgroundColor = Color(0xFF101010)
             ) {
-                Column(Modifier.fillMaxWidth()) {
+                Column(Modifier.fillMaxWidth(), horizontalAlignment = Alignment.CenterHorizontally) {
 
                     Row(horizontalArrangement = Arrangement.SpaceBetween, modifier = Modifier
                         .fillMaxWidth()
@@ -142,14 +182,19 @@ fun HasAccount(party : Party,) {
                             modifier = Modifier.padding(top = 25.dp, end = 25.dp)
                         )
                     }
+                    Divider(color = White, thickness = 1.dp, modifier = Modifier.width(250.dp))
+
                     Column(modifier = Modifier
                         .fillMaxSize()
                         .verticalScroll(rememberScrollState())) {
 
                         party.accounts!!.forEach { account ->
-
+                            val transactionList = Gson().toJson(account.transactions) as String
                             Row(
                                 Modifier
+                                    .clickable {
+                                      navController.navigate(Screen.TransactionCollectionView.route+"/${transactionList}"+"/${party}")
+                                    }
                                     .fillMaxWidth()
                                     .padding(bottom = 20.dp), horizontalArrangement = Arrangement.SpaceBetween) {
                                 Column() {
@@ -183,14 +228,12 @@ fun HasAccount(party : Party,) {
                         
                     }
 
-
-
                 }
-
 
             }
 
         }
+
     }
 
 }
@@ -199,5 +242,5 @@ fun HasAccount(party : Party,) {
 @Preview(showBackground = true)
 @Composable
 fun DefaultPreview() {
-        //NoAccount(name = "Abbass")
+        //HasAccount(party = )
 }

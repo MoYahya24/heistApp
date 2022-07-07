@@ -20,10 +20,13 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
 import com.example.heist_cx_drd.ui.appBar.AppBar
 import com.example.heist_cx_drd.ui.theme.Black
 import com.example.heist_cx_drd.ui.theme.Blackish
 import com.example.heist_cx_drd.ui.theme.White
+import com.google.gson.Gson
+import io.heist.store.model.core.parties.Party
 import kotlinx.coroutines.launch
 
 @Composable
@@ -45,7 +48,8 @@ modifier = Modifier
 fun DrawerBody(
     items : List<MenuItem>,
     modifier: Modifier = Modifier,
-    onItemClick: (MenuItem) -> Unit
+    party: Party,
+    navController: NavController
 ) {
 
     LazyColumn(modifier.background(color = Color(0xFF000000))) {
@@ -55,7 +59,7 @@ fun DrawerBody(
                     .fillMaxWidth()
                     .background(color = Color(0xFF000000))
                     .clickable {
-                        onItemClick
+                        navController.navigate(item.route)
                     }
                     .padding(16.dp)
             ) {
@@ -69,7 +73,8 @@ fun DrawerBody(
 }
 
 @Composable
-fun NavDrawer( pageContent: (@Composable() () -> Unit)) {
+fun NavDrawer( party: Party?, navController : NavController, pageContent: (@Composable() () -> Unit)) {
+    val partyJson = Gson().toJson(party) as String
     val scaffoldState = rememberScaffoldState()
     val scope = rememberCoroutineScope()
     Scaffold(
@@ -85,14 +90,15 @@ fun NavDrawer( pageContent: (@Composable() () -> Unit)) {
         },
         drawerContent = {
             DrawerHeader()
-            DrawerBody(items = listOf(
-                MenuItem("acc", "ACCOUNTS", Icons.Filled.Person, itemClick = { }),
-                MenuItem("transactions", "TRANSACTIONS", Icons.Filled.Share, itemClick = {})
-
-            ),
-                onItemClick = {
-                    println(it.title)
-                }
+            DrawerBody(party=party!!,
+                navController=navController,
+                items = listOf(
+                MenuItem("acc", "ACCOUNTS", Icons.Filled.Person,
+                    route = Screen.AccCollectionView.route+"/${partyJson}"
+                ),
+                MenuItem("transactions", "TRANSACTIONS", Icons.Filled.Share, route =
+                    Screen.TransactionCollectionView.route+"/${partyJson}")
+                )
             )
         },
         drawerGesturesEnabled = true,
