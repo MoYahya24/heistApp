@@ -14,6 +14,7 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.example.heist_cx_drd.ui.components.ButtonSize
 import com.example.heist_cx_drd.ui.components.ComboBox
+import com.example.heist_cx_drd.ui.components.ComboBoxText
 import com.example.heist_cx_drd.ui.components.HeistButton
 import com.example.heistux.ui.navigation.Screen
 import com.google.gson.Gson
@@ -21,6 +22,8 @@ import io.heist.store.model.core.parties.Party
 
 @Composable
 fun ConnectAccount( party : Party, navController: NavController, ) {
+
+    val comboBoxText = ComboBoxText()
 
     Column(modifier = Modifier
         .fillMaxSize()
@@ -47,7 +50,7 @@ fun ConnectAccount( party : Party, navController: NavController, ) {
                         modifier = Modifier.padding(start = 20.dp, top = 20.dp)
                     )
                     val banks= listOf<String>("CommonWealth","WestPac","ANZ","NAB")
-                    //ComboBox(list = banks, text = "-select bank-", boxmodifier = Modifier.padding(horizontal = 20.dp))
+                    ComboBox(list = banks, comboBoxText = comboBoxText, boxmodifier = Modifier.padding(horizontal = 20.dp))
                 }
 
                 Row(horizontalArrangement = Arrangement.End, modifier = Modifier

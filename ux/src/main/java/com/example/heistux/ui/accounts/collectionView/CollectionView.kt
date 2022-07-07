@@ -48,6 +48,7 @@ fun NoAccount(party : Party, navController: NavController) {
                 .background(color = Color(0xFF000000))
         ) {
 
+            Divider(color = com.example.heist_cx_drd.ui.theme.White, thickness = 1.dp, modifier = Modifier.width(300.dp))
 
             Text(
                 text = "Welcome, " + party.name,
@@ -118,22 +119,27 @@ fun HasAccount(party : Party, navController: NavController) {
                 .fillMaxSize()
                 .background(color = Color(0xFF000000))
         ) {
+            Column(modifier = Modifier.fillMaxWidth(), horizontalAlignment = Alignment.CenterHorizontally) {
+                Divider(color = com.example.heist_cx_drd.ui.theme.White, thickness = 1.dp, modifier = Modifier.width(300.dp))
+            }
 
             Text(
                 text = "Accounts",
                 color = Color(0xFFFFFFFF),
                 fontSize = MaterialTheme.typography.h3.fontSize,
                 fontWeight = FontWeight.ExtraBold,
-                modifier = Modifier.padding(top = 10.dp, start= 20.dp, bottom=5.dp)
+                modifier = Modifier.padding(top = 30.dp, start= 20.dp, bottom=5.dp)
             )
 
-            Divider(color = White, thickness = 1.dp, modifier = Modifier.width(150.dp).padding(start= 20.dp))
+            Divider(color = White, thickness = 1.dp, modifier = Modifier
+                .width(150.dp)
+                .padding(start = 20.dp))
 
             Column(horizontalAlignment = Alignment.Start, modifier = Modifier
                 .background(Color(0xFF000000))
                 .fillMaxWidth()
                 .wrapContentHeight()
-                 .padding(top = 30.dp)
+                .padding(top = 30.dp)
             ) {
 
                 HeistButton(action = {
@@ -193,7 +199,7 @@ fun HasAccount(party : Party, navController: NavController) {
                             Row(
                                 Modifier
                                     .clickable {
-                                      navController.navigate(Screen.TransactionCollectionView.route+"/${transactionList}"+"/${party}")
+                                        navController.navigate(Screen.TransactionCollectionView.route + "/${transactionList}" + "/${party}")
                                     }
                                     .fillMaxWidth()
                                     .padding(bottom = 20.dp), horizontalArrangement = Arrangement.SpaceBetween) {
