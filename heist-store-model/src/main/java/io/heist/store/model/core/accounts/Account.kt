@@ -43,7 +43,7 @@ data class Account (
 
     val extensions: List<Extension>? = null,
 
-    val transactions: List<Transaction>? =  listOf<Transaction>(),
+    val transactions: MutableList<Transaction>? =  mutableListOf(),
 
     val payments: List<Payment?>? = null
 

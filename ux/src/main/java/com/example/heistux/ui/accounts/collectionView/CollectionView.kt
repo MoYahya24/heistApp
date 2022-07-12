@@ -105,6 +105,7 @@ fun NoAccount(party : Party, navController: NavController) {
 }
 @Composable
 fun HasAccount(party : Party, navController: NavController) {
+
     val partyJson = Gson().toJson(party) as String
     var totalBalance : BigDecimal = BigDecimal.valueOf(0)
 
@@ -144,7 +145,6 @@ fun HasAccount(party : Party, navController: NavController) {
 
                 HeistButton(action = {
 
-                    val partyJson = Gson().toJson(party) as String
                     navController.navigate(Screen.OpenAccount1.route+"/${partyJson}")
 
                 }, size = ButtonSize.MEDIUM, text ="OPEN AN ACCOUNT" , modifier = Modifier
@@ -153,7 +153,6 @@ fun HasAccount(party : Party, navController: NavController) {
 
                 HeistButton(action = {
 
-                    val partyJson = Gson().toJson(party) as String
                     navController.navigate(Screen.ConnectAccount.route+"/${partyJson}")
 
                 }, size = ButtonSize.MEDIUM, text ="CONNECT ACCOUNT" , modifier = Modifier
@@ -195,11 +194,11 @@ fun HasAccount(party : Party, navController: NavController) {
                         .verticalScroll(rememberScrollState())) {
 
                         party.accounts!!.forEach { account ->
-                            val transactionList = Gson().toJson(account.transactions) as String
+                            val acc = Gson().toJson(account) as String
                             Row(
                                 Modifier
                                     .clickable {
-                                        navController.navigate(Screen.TransactionCollectionView.route + "/${transactionList}" + "/${party}")
+                                        navController.navigate(Screen.TransactionCollectionView.route + "/${acc}" + "/${partyJson}")
                                     }
                                     .fillMaxWidth()
                                     .padding(bottom = 20.dp), horizontalArrangement = Arrangement.SpaceBetween) {

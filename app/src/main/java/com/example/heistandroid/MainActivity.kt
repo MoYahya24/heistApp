@@ -11,6 +11,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.compose.rememberNavController
 import com.example.heistandroid.ui.theme.HeistAndroidTheme
 import com.example.heistux.ui.accounts.collectionView.HasAccount
+import com.example.heistux.ui.homeScreen.home.Home
+import com.example.heistux.ui.homeScreen.login.Login
 import com.example.heistux.ui.navigation.Navigation
 import io.heist.store.model.core.accounts.Account
 import io.heist.store.model.core.amounts.Amount
@@ -28,7 +30,7 @@ class MainActivity : ComponentActivity() {
         setContent {
             HeistAndroidTheme {
 
-                Navigation(party = Generate())
+            Navigation(party = Generate())
                
             }
         }

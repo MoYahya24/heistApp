@@ -96,8 +96,8 @@ fun NavDrawer( party: Party?, navController : NavController, pageContent: (@Comp
                 MenuItem("acc", "ACCOUNTS", Icons.Filled.Person,
                     route = Screen.AccCollectionView.route+"/${partyJson}"
                 ),
-                MenuItem("transactions", "TRANSACTIONS", Icons.Filled.Share, route =
-                    Screen.TransactionCollectionView.route+"/${partyJson}")
+                MenuItem("transactions", "TRANSACTIONS", Icons.Filled.Share,
+                    route = Screen.TransactionCollectionView.route+"/${partyJson}")
                 )
             )
         },

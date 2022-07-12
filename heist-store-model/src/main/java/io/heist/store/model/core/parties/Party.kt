@@ -19,6 +19,10 @@ data class Party (
 
     val legalStructure: String? = null,
 
+    val username: String? = null,
+
+    val password: String? = null,
+
     val beneficial: Boolean? = null,
 
     val role: String? = null,
@@ -29,7 +33,7 @@ data class Party (
 
     val mobile: String? = null,
 
-    val addresses: List<Address>? = null,
+    val addresses: List<Address>? = mutableListOf(),
 
     val accounts: MutableList<Account>? = mutableListOf(),
 

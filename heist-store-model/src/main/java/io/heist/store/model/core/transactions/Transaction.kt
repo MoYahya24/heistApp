@@ -5,7 +5,6 @@ import io.heist.store.model.core.aliases.Alias
 import io.heist.store.model.core.amounts.Amount
 import io.heist.store.model.core.balances.Balance
 import io.heist.store.model.core.extensions.Extension
-import java.time.OffsetDateTime
 
 data class Transaction (
 
@@ -17,9 +16,9 @@ data class Transaction (
 
     val status: String? = "Booked",
 
-    val booked: OffsetDateTime? = null,
+    val booked: String? = null,
 
-    val valued: OffsetDateTime? = null,
+    val valued: String? = null,
 
     val statements: List<String>? = null,
 
@@ -51,4 +50,5 @@ data class Transaction (
 
 ) {
     val transactionStatus = TransactionStatus.fromValue(status!!)
+
 }

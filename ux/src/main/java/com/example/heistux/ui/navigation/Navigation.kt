@@ -17,6 +17,11 @@ import com.example.heistux.ui.accounts.openAccount.OpenAcc1
 import com.example.heistux.ui.accounts.openAccount.OpenAcc2
 import com.example.heistux.ui.accounts.openAccount.OpenAcc3
 import com.example.heistux.ui.accounts.openAccount.OpenAcc4
+import com.example.heistux.ui.homeScreen.create.Create1
+import com.example.heistux.ui.homeScreen.create.Create2
+import com.example.heistux.ui.homeScreen.create.Created
+import com.example.heistux.ui.homeScreen.home.Home
+import com.example.heistux.ui.homeScreen.login.Login
 import com.example.heistux.ui.transactions.collectionView.TransactionsCollectionView
 import com.google.gson.Gson
 import io.heist.store.model.core.accounts.Account
@@ -32,10 +37,44 @@ import java.math.BigDecimal
 fun Navigation(party: Party) {
 
     val navController = rememberNavController()
-    NavHost(navController = navController,startDestination = Screen.AccCollectionView.route) {
+    NavHost(navController = navController,startDestination = Screen.Home.route) {
 
-        composable( route = Screen.AccCollectionView.route ) {
-            AccountsCollectionView(navController, party)
+        composable( route = Screen.Home.route ) {
+            Home(navController)
+        }
+
+        composable( route = Screen.Login.route)
+         {
+             Login(navController)
+        }
+
+        composable( route = Screen.Create1.route)
+        {
+            Create1(navController)
+        }
+
+        composable( route = Screen.Create2.route +"/{username}"+"/{password}",
+            arguments = listOf(
+                navArgument("username" ) {
+                    type= NavType.StringType
+                },
+                navArgument("password" ) {
+                    type= NavType.StringType
+                }
+            )
+        ) {entry->
+            Create2(username = entry.arguments?.get("username") as String, password = entry.arguments?.get("password") as String, navController = navController)
+        }
+
+        composable( route = Screen.Created.route +"/{party}",
+            arguments = listOf(
+                navArgument("party" ) {
+                    type= NavType.StringType
+                }
+            )
+        ) {entry->
+            val p = Gson().fromJson(entry?.arguments?.get("party") as String, Party::class.java) as Party
+            Created(p, navController)
         }
 
         composable( route = Screen.AccCollectionView.route +"/{party}",
@@ -135,9 +174,9 @@ fun Navigation(party: Party) {
             TransactionsCollectionView(party = p, navController = navController)
         }
 
-        composable(route = Screen.TransactionCollectionView.route+"/{transactions}"+"/{party}",
+        composable(route = Screen.TransactionCollectionView.route+"/{account}"+"/{party}",
             arguments = listOf(
-                navArgument("transactions" ) {
+                navArgument("account" ) {
                     type= NavType.StringType
                 },
                 navArgument("party" ) {
@@ -145,9 +184,9 @@ fun Navigation(party: Party) {
                 }
             )
         ) {entry->
-            val t = Gson().fromJson(entry?.arguments?.get("transactions") as String, List::class.java) as List<Transaction>
+            val acc = Gson().fromJson(entry?.arguments?.get("account") as String, Account::class.java) as Account
             val p = Gson().fromJson(entry?.arguments?.get("party") as String, Party::class.java) as Party
-            TransactionsCollectionView(transactionlist = t, navController = navController, party = p)
+            TransactionsCollectionView(account = acc, navController = navController, party = p)
         }
 
 
